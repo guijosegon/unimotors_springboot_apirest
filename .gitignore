@@ -1,0 +1,39 @@
+/target/
+/.idea/
+*.iml
+/.vscode/
+*.class
+*.log
+*.jar
+*.war
+*.ear
+*.db
+*.sqlite
+/.mvn/
+/.settings/
+.settings/
+# IntelliJ
+out/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Maven
+.mvn/repository/
+
+# Environment
+.env
+.env.local
+
+# IDE files
+.project
+
+# Node
+node_modules/
+
+# Logs
+logs/
+
+# generated
+spring-boot-app.pid
