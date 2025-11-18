@@ -42,13 +42,20 @@ public class AnuncioVeiculo {
     @Column(nullable = false, length = 2)
     private String estado;
 
+    @Column(nullable = false)
+    private Integer ano;
+
     @Column(name = "criado_em", nullable = false)
     private LocalDateTime criadoEm;
 
-    public AnuncioVeiculo() { this.id = UUID.randomUUID(); this.criadoEm = LocalDateTime.now(); }
+    public AnuncioVeiculo() {
+        this.id = UUID.randomUUID();
+        this.criadoEm = LocalDateTime.now();
+    }
 
-    // Minimal constructor
-    public AnuncioVeiculo(Usuario proprietario, Modelo modelo, String titulo, BigDecimal preco, String cidade, String estado) {
+    // Construtor CORRIGIDO — agora recebe o ano corretamente
+    public AnuncioVeiculo(Usuario proprietario, Modelo modelo, String titulo,
+                          BigDecimal preco, String cidade, String estado, Integer ano) {
         this();
         this.proprietario = proprietario;
         this.modelo = modelo;
@@ -57,25 +64,38 @@ public class AnuncioVeiculo {
         this.status = "RASCUNHO";
         this.cidade = cidade;
         this.estado = estado;
+        this.ano = ano; // agora funciona
     }
 
-    // getters/setters omitted for brevity (can be generated in IDE)
+    // Getters e setters
     public UUID getId() { return id; }
+
     public Usuario getProprietario() { return proprietario; }
     public void setProprietario(Usuario proprietario) { this.proprietario = proprietario; }
+
     public Modelo getModelo() { return modelo; }
     public void setModelo(Modelo modelo) { this.modelo = modelo; }
+
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
+
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
+
     public BigDecimal getPreco() { return preco; }
     public void setPreco(BigDecimal preco) { this.preco = preco; }
+
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
     public String getCidade() { return cidade; }
     public void setCidade(String cidade) { this.cidade = cidade; }
+
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+
+    public Integer getAno() { return ano; }  // <--- ADICIONADO
+    public void setAno(Integer ano) { this.ano = ano; } // <--- ADICIONADO
+
     public LocalDateTime getCriadoEm() { return criadoEm; }
 }
