@@ -6,6 +6,7 @@ import br.com.unimotors.autenticacao.jwt.TokenJwtService;
 import br.com.unimotors.usuario.dto.LoginDTO;
 import br.com.unimotors.usuario.dto.RegistroDTO;
 import br.com.unimotors.usuario.service.UsuarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/autenticacao")
+@Tag(name = "Auth")
 public class AuthController {
 
     private final UsuarioService usuarios;

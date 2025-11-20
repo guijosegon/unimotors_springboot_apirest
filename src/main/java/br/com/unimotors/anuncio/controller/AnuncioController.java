@@ -5,6 +5,7 @@ import br.com.unimotors.anuncio.dto.AnuncioCriarDTO;
 import br.com.unimotors.anuncio.dto.AnuncioRespostaDTO;
 import br.com.unimotors.anuncio.dto.AtualizarStatusAnuncioDTO;
 import br.com.unimotors.anuncio.service.AnuncioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/anuncios")
+@Tag(name = "Anuncio")
 public class AnuncioController {
 
     private final AnuncioService anuncios;
@@ -79,4 +81,3 @@ public class AnuncioController {
         return ResponseEntity.noContent().build();
     }
 }
-

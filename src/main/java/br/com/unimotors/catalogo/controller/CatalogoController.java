@@ -2,6 +2,7 @@ package br.com.unimotors.catalogo.controller;
 
 import br.com.unimotors.catalogo.dto.*;
 import br.com.unimotors.catalogo.service.CatalogoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Catalogo")
 public class CatalogoController {
 
     private final CatalogoService catalogo;
@@ -64,4 +66,3 @@ public class CatalogoController {
         return ResponseEntity.ok(catalogo.criarOpcional(dto));
     }
 }
-

@@ -4,6 +4,7 @@ import br.com.unimotors.negocio.dto.LojaCriarDTO;
 import br.com.unimotors.negocio.dto.LojaMembroDTO;
 import br.com.unimotors.negocio.dto.LojaRespostaDTO;
 import br.com.unimotors.negocio.service.LojaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/lojas")
+@Tag(name = "Loja")
 public class LojaController {
 
     private final LojaService lojas;
@@ -47,4 +49,3 @@ public class LojaController {
         return ResponseEntity.noContent().build();
     }
 }
-

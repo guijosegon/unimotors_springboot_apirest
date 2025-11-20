@@ -5,6 +5,7 @@ import br.com.unimotors.usuario.dto.UsuarioAtualizarDTO;
 import br.com.unimotors.usuario.dto.UsuarioRespostaDTO;
 import br.com.unimotors.usuario.model.Usuario;
 import br.com.unimotors.usuario.service.UsuarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/usuarios")
 @PreAuthorize("hasRole('ADMIN')")
+@Tag(name = "Usuario")
 public class UsuarioController {
 
     private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
@@ -61,4 +63,3 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 }
-

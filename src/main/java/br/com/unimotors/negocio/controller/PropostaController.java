@@ -3,6 +3,7 @@ package br.com.unimotors.negocio.controller;
 import br.com.unimotors.negocio.dto.PropostaCriarDTO;
 import br.com.unimotors.negocio.dto.PropostaRespostaDTO;
 import br.com.unimotors.negocio.service.PropostaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Proposta")
 public class PropostaController {
 
     private final PropostaService propostas;
@@ -55,4 +57,3 @@ public class PropostaController {
         return ResponseEntity.ok(propostas.recusar(id, email, isAdmin));
     }
 }
-
