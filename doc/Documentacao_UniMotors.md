@@ -273,8 +273,11 @@ public record PropostaRespostaDTO(
 ## 9) Endpoints REST
 **Autenticação**  
 `POST /api/autenticacao/registrar` – cria usuário  
-`POST /api/autenticacao/login` – retorna JWT  
-`POST /api/autenticacao/atualizar-token` – refresh
+`POST /api/autenticacao/login` – retorna JWT (token de acesso)
+
+**Usuários (ADMIN)**  
+`GET /api/usuarios` · `GET /api/usuarios/{id}`  
+`POST /api/usuarios` · `PUT /api/usuarios/{id}` · `DELETE /api/usuarios/{id}`
 
 **Catálogo**  
 `GET /api/marcas` · `POST /api/marcas` (ADMIN)  
@@ -290,10 +293,6 @@ public record PropostaRespostaDTO(
 `PATCH /api/anuncios/{id}/status` (proprietário/ADMIN)  
 `DELETE /api/anuncios/{id}` (proprietário/ADMIN)
 
-**Imagens**  
-`POST /api/anuncios/{id}/imagens` (lista de URLs ou upload)  
-`DELETE /api/anuncios/{id}/imagens/{imagemId}`
-
 **Propostas**  
 `POST /api/anuncios/{id}/propostas` (COMPRADOR)  
 `GET /api/anuncios/{id}/propostas` (proprietário/ADMIN)  
@@ -304,6 +303,147 @@ public record PropostaRespostaDTO(
 `POST /api/anuncios/{id}/favoritos`  
 `DELETE /api/anuncios/{id}/favoritos`  
 `GET /api/meus/favoritos`
+
+**Lojas (ADMIN)**  
+`GET /api/lojas`  
+`POST /api/lojas`  
+`POST /api/lojas/{id}/membros`  
+`DELETE /api/lojas/{id}/membros/{usuarioId}`
+
+### 9.1 Exemplos de Requests/Responses
+
+**Autenticação – registrar usuário**  
+`POST /api/autenticacao/registrar`
+```json
+{
+  "nome": "Admin",
+  "email": "admin@unimotors.com",
+  "senha": "senha1234",
+  "perfil": "ADMIN"
+}
+```
+Resposta (200):
+```json
+{
+  "id": "8f4e6c70-4b70-4a5c-b7d1-1a2b3c4d5e6f",
+  "nome": "Admin",
+  "email": "admin@unimotors.com",
+  "perfil": "ADMIN",
+  "telefone": null,
+  "criadoEm": "2024-11-20T14:30:15.123456"
+}
+```
+
+**Autenticação – login**  
+`POST /api/autenticacao/login`
+```json
+{
+  "email": "admin@unimotors.com",
+  "senha": "senha1234"
+}
+```
+Resposta (200):
+```json
+{
+  "tokenAcesso": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+Header para chamadas protegidas:
+```http
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Anúncios – criar anúncio (VENDEDOR/ADMIN)**  
+`POST /api/anuncios`
+```json
+{
+  "modeloId": "11111111-2222-3333-4444-555555555555",
+  "especificacaoId": "66666666-7777-8888-9999-000000000000",
+  "titulo": "Corolla 2.0 XEi 2022",
+  "descricao": "Carro em ótimo estado, único dono.",
+  "preco": 115000.00,
+  "cidade": "Criciúma",
+  "estado": "SC",
+  "opcionaisIds": [
+    "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+  ],
+  "urlsImagens": [
+    "https://meu-bucket/imagens/corolla-1.jpg",
+    "https://meu-bucket/imagens/corolla-2.jpg"
+  ]
+}
+```
+Resposta (200):
+```json
+{
+  "id": "12345678-90ab-cdef-1234-567890abcdef",
+  "titulo": "Corolla 2.0 XEi 2022",
+  "descricao": "Carro em ótimo estado, único dono.",
+  "preco": 115000.0,
+  "status": "RASCUNHO",
+  "cidade": "Criciúma",
+  "estado": "SC",
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "ano": 2022,
+  "imagens": [
+    "https://meu-bucket/imagens/corolla-1.jpg",
+    "https://meu-bucket/imagens/corolla-2.jpg"
+  ],
+  "opcionais": [
+    "Ar-condicionado",
+    "Direção hidráulica"
+  ],
+  "proprietarioId": "8f4e6c70-4b70-4a5c-b7d1-1a2b3c4d5e6f"
+}
+```
+
+**Propostas – criar proposta (COMPRADOR)**  
+`POST /api/anuncios/{id}/propostas`
+```json
+{
+  "valor": 110000.00,
+  "mensagem": "Posso pagar à vista nesta semana."
+}
+```
+Resposta (200):
+```json
+{
+  "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "anuncioId": "12345678-90ab-cdef-1234-567890abcdef",
+  "compradorId": "99999999-8888-7777-6666-555555555555",
+  "valor": 110000.0,
+  "status": "PENDENTE",
+  "criadoEm": "2024-11-20T15:10:30.123456"
+}
+```
+
+**Favoritos – listar favoritos do usuário logado**  
+`GET /api/meus/favoritos`
+```json
+[
+  {
+    "id": "12345678-90ab-cdef-1234-567890abcdef",
+    "titulo": "Corolla 2.0 XEi 2022",
+    "descricao": "Carro em ótimo estado, único dono.",
+    "preco": 115000.0,
+    "status": "ATIVO",
+    "cidade": "Criciúma",
+    "estado": "SC",
+    "marca": "Toyota",
+    "modelo": "Corolla",
+    "ano": 2022,
+    "imagens": [
+      "https://meu-bucket/imagens/corolla-1.jpg"
+    ],
+    "opcionais": [
+      "Ar-condicionado",
+      "Direção hidráulica"
+    ],
+    "proprietarioId": "8f4e6c70-4b70-4a5c-b7d1-1a2b3c4d5e6f"
+  }
+]
+```
 
 ---
 

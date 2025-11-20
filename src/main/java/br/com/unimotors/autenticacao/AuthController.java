@@ -40,7 +40,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenRespostaDTO> login(@RequestBody @Valid LoginDTO dto) {
         Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(dto.email(), dto.senha()));
-    var papeis = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        var papeis = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
         var token = tokens.gerarToken(dto.email(), papeis);
         return ResponseEntity.ok(new TokenRespostaDTO(token));
     }
