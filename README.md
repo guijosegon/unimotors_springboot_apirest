@@ -2,6 +2,8 @@
 
 API REST para marketplace de veículos (carros/motos) construída com Spring Boot 3, Spring Security (JWT), Spring Data JPA, Flyway e PostgreSQL, seguindo os requisitos do trabalho de backend.
 
+![Tela de Swagger](https://raw.githubusercontent.com/guijosegon/project-assets/master/UniMotors/swagger.png)
+
 ## Tecnologias
 - Java 17+ / Maven 3.8+  
 - Spring Boot 3.2.x (web, data-jpa, security, validation)  
