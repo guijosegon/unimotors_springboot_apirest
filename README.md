@@ -48,7 +48,7 @@ API REST para marketplace de veículos (carros/motos) construída com Spring Boo
 
 3. Acessar Swagger/OpenAPI:
 
-- `http://localhost:8080/swagger-ui/index.html`  
+- `http://localhost:8088/swagger-ui/index.html`  
 
 ## Fluxo básico de uso
 1. **Registrar usuário** (público):  
