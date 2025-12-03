@@ -15,6 +15,7 @@ API REST para marketplace de veículos (carros/motos) construída com Spring Boo
 - `src/main/java/br/com/unimotors/UniMotorsApplication.java` – classe principal  
 - `src/main/resources/application.properties` – configuração (datasource, Flyway, JWT, porta)  
 - `src/main/resources/db/migration/V1__init.sql` – migration inicial com todo o schema (usuarios, marcas, modelos, anuncios, propostas, favoritos, lojas, etc.)  
+- `src/main/resources/db/migration/SEED__mock_data.sql` – script SQL de seed de dados mock (usuarios, lojas, catálogo, anúncios, propostas, favoritos) para execução manual  
 
 ### Módulos de domínio
 - `autenticacao` – `AuthController`, `TokenJwtService`, `FiltroJwt`  
@@ -46,11 +47,47 @@ API REST para marketplace de veículos (carros/motos) construída com Spring Boo
    mvn spring-boot:run
    ```
 
-   O Flyway aplicará `V1__init.sql` automaticamente na primeira execução.
+   O Flyway aplicará `V1__init.sql` automaticamente na primeira execução (ou quando a migration ainda não tiver sido aplicada).
 
 3. Acessar Swagger/OpenAPI:
 
 - `http://localhost:8088/swagger-ui/index.html`  
+
+## Seed de dados (mock)
+
+O arquivo `SEED__mock_data.sql` pode ser executado **manualmente** para popular o banco com alguns registros de exemplo, incluindo:
+
+- Usuários (senha padrão `123456` para todos):
+  - `admin@unimotors.com` – perfil `ADMIN`
+  - `vendedor1@unimotors.com` – perfil `VENDEDOR`
+  - `vendedor2@unimotors.com` – perfil `VENDEDOR`
+  - `comprador1@unimotors.com` – perfil `COMPRADOR`
+- Lojas: `UniMotors Premium` (SP) e `UniMotors Sul` (RS)
+- Catálogo básico: marcas (`Toyota`, `Honda`, `Chevrolet`), modelos (`Corolla`, `Civic`, `Onix`), especificações e opcionais
+- Um anúncio ativo de veículo (`Toyota Corolla 2022 XEi`) associado à `UniMotors Premium`
+- Uma proposta e um favorito relacionados a esse anúncio
+
+Isso facilita testar rapidamente o fluxo de autenticação, anúncios, propostas e favoritos sem precisar cadastrar tudo manualmente.
+
+### Como executar o seed somente uma vez
+
+1. Certifique-se de que o schema já foi criado (Flyway rodou `V1__init.sql`):
+   - Basta iniciar a aplicação uma vez com `mvn spring-boot:run`.
+2. Execute o script de seed no banco `unimotors` usando seu cliente SQL (psql, DBeaver, TablePlus, etc.):
+   - Abra o arquivo: `src/main/resources/db/migration/SEED__mock_data.sql`
+   - Execute o conteúdo contra o banco `unimotors`.
+3. Ajuste os hashes de senha dos usuários de seed para o padrão da aplicação:
+   - Suba a aplicação **uma única vez** com o profile `seed`:
+     ```bash
+     mvn spring-boot:run -Dspring-boot.run.profiles=seed
+     ```
+   - O componente `UsuarioSeedFixRunner` será executado apenas nesse profile e verificará se os usuários:
+     `admin@unimotors.com`, `vendedor1@unimotors.com`, `vendedor2@unimotors.com`, `comprador1@unimotors.com`
+     estão com a senha correta (`123456`), ajustando o hash se necessário.
+4. Para o uso normal da API (sem rodar seed de novo), suba a aplicação **sem** o profile `seed`:
+   ```bash
+   mvn spring-boot:run
+   ```
 
 ## Fluxo básico de uso
 1. **Registrar usuário** (público):  
@@ -65,7 +102,7 @@ API REST para marketplace de veículos (carros/motos) construída com Spring Boo
    }
    ```
 2. **Login**:  
-   `POST /api/autenticacao/login` → retorna token JWT em `tokenAcesso`.  
+   `POST /api/autenticacao/login` → retorna token JWT em `token`/`tokenAcesso` (DTO de resposta).  
    Enviar o token no header: `Authorization: Bearer <token>`.
 
 3. **Principais endpoints** (resumo)
@@ -91,6 +128,28 @@ API REST para marketplace de veículos (carros/motos) construída com Spring Boo
 - Lojas (ADMIN):  
   - `GET /api/lojas` · `POST /api/lojas`  
   - `POST /api/lojas/{id}/membros` · `DELETE /api/lojas/{id}/membros/{usuarioId}`  
+
+## Autenticação via Swagger (JWT Bearer)
+
+A API está integrada ao Swagger/OpenAPI com esquema de segurança Bearer JWT configurado em `OpenApiConfig`.
+
+Passos para autenticar e testar endpoints protegidos pelo Swagger:
+
+1. Acessar a UI:
+   - `http://localhost:8088/swagger-ui/index.html`
+2. Obter um token JWT:
+   - Use um dos usuários do seed (por exemplo, `admin@unimotors.com` / senha `123456`).
+   - Chame `POST /api/autenticacao/login` pelo próprio Swagger, informando `email` e `senha`.
+   - A resposta trará o token JWT (campo `token` ou `tokenAcesso`).
+3. Clicar em **Authorize** (no canto superior direito da UI):
+   - Selecionar o esquema `bearerAuth (http, Bearer)`.
+   - No campo de valor, colar **somente** o token retornado (não é necessário escrever `Bearer `, o Swagger adiciona automaticamente).
+   - Confirmar em **Authorize**.
+4. Executar endpoints protegidos:
+   - Todos os endpoints anotados com segurança (por exemplo, `/api/usuarios`, `/api/anuncios`, etc.) passarão a receber o header `Authorization: Bearer <token>` e funcionarão conforme os papéis do usuário.
+   - Alguns endpoints exigem perfis específicos, como `@PreAuthorize("hasRole('ADMIN')")` em `/api/usuarios` (use o usuário ADMIN do seed).
+
+Caso o token esteja inválido ou expirado, o filtro `FiltroJwt` não autenticará a requisição, e os endpoints protegidos retornarão `401/403` conforme a configuração de segurança.
 
 ## Exemplos de requests/responses
 
